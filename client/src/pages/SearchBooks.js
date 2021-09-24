@@ -28,9 +28,9 @@ const SearchBooks = () => {
   const [total, setTotal] = useState(false);
   // create state for holding our API Token field data  **SANTIAGO
   const [Hosts, setHosts] = useState([]);
-  console.log('Hosts:', Hosts)
+  // console.log('Hosts:', Hosts)
   const [isLoading, setIsLoading] = useState(false);
-  console.log('isLoading:', isLoading)
+  // console.log('isLoading:', isLoading)
 
 
 
@@ -88,7 +88,7 @@ const SearchBooks = () => {
       }
     })
 
-    console.log('dynatrace handled: ', {tenantId, apiToken})
+    // console.log('dynatrace handled: ', {tenantId, apiToken})
     if (!(tenantId || apiToken)) {
       console.log('something is missing')
       return false;
@@ -100,7 +100,7 @@ const SearchBooks = () => {
       const response = await getHostUnitConsumption(tenantId, apiToken);
 
       if (!response.ok) {
-        console.log('response!!!!!!!:', response)
+        // console.log('response!!!!!!!:', response)
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
@@ -113,7 +113,7 @@ const SearchBooks = () => {
       const last10min = Date.now()-600000;
       console.log('last10min:', last10min)
       const items = await response.json();
-      console.log('items:', items)
+      // console.log('items:', items)
       HUdata = items.map((host) => {
         if (host.lastSeenTimestamp > last10min ) {
             return ({
@@ -125,7 +125,7 @@ const SearchBooks = () => {
           } else return
       }).filter(o => o !== undefined)
 
-      console.log(HUdata)
+      // console.log(HUdata)
       totalHUsConsumed = HUdata.reduce((total, value) => total + value.consumedHUs, 0)
       setTotal(true)
       setHosts(HUdata)
