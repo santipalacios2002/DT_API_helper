@@ -119,7 +119,8 @@ const SearchBooks = () => {
             return ({
               consumedHUs: host.consumedHostUnits,
               displayName: host.displayName,
-              entityId: host.entityId
+              entityId: host.entityId,
+              monitoringMode: host.monitoringMode
             }
             )
           } else return
@@ -237,6 +238,7 @@ const SearchBooks = () => {
             <th>Host Name</th>
             <th>Host Entity ID</th>
             <th>Consumed HUs</th>
+            <th>Monitoring Mode</th>
           </tr>
         </thead>
         <tbody>
@@ -247,6 +249,7 @@ const SearchBooks = () => {
             <td>{host.displayName}</td>
             <td>{host.entityId}</td>
             <td>{host.consumedHUs}</td>
+            <td>{host.monitoringMode}</td>
           </tr>)
         })}
         </tbody>
