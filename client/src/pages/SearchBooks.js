@@ -292,7 +292,7 @@ const SearchBooks = () => {
             ? `Your tenant is consuming a total of ${totalHUsConsumed} with ${Hosts.length} Hosts`
             : 'Enter your tenant and API token'}
         </h2>
-        {isLoading ? (
+{/*         {isLoading ? (
           'Loading...'
         ) : (
           <Table
@@ -344,8 +344,9 @@ const SearchBooks = () => {
                 })}
                 </tbody>
                 </Table>
-                )}
+              )} */}
                 <ToolkitProvider
+                  bootstrap4
                   keyField="entityId"
                   data={ Hosts }
                   columns={ columns }
