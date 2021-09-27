@@ -23,6 +23,7 @@ import ToolkitProvider, {
   Search,
   CSVExport,
 } from 'react-bootstrap-table2-toolkit';
+import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 
 // const products = [ {id: 1, name: 'hello', entityId: '1234', hus: 2, mon_mode: 'full'} ];
 const { SearchBar, ClearSearchButton } = Search;
@@ -35,6 +36,7 @@ const columns = [
   {
     dataField: 'name',
     text: 'Host Name',
+    filter: textFilter(),
     sort: true,
   },
   {
@@ -49,6 +51,13 @@ const columns = [
   {
     dataField: 'mon_mode',
     text: 'Monitoring Mode',
+    filter: textFilter(),
+    sort: true,
+  },
+  {
+    dataField: 'ipAddr',
+    text: 'IP Addr',
+    filter: textFilter(),
     sort: true,
   },
 ];
@@ -128,6 +137,7 @@ const HUconsumption = () => {
               entityId: host.entityId,
               consumedHUs: host.consumedHostUnits,
               monitoringMode: host.monitoringMode,
+              ipAddresses: host.ipAddresses.map(ip => `${ip}, `)
             };
           } else return;
         })
@@ -140,6 +150,7 @@ const HUconsumption = () => {
       );
       setTotal(true);
       setHosts(HUdata);
+      console.log('HUdata:', HUdata)
       const hosts2 = HUdata.map((host, index) => {
         return {
           id: index + 1,
@@ -147,6 +158,7 @@ const HUconsumption = () => {
           entityId: host.entityId,
           hus: host.consumedHUs,
           mon_mode: host.monitoringMode,
+          ipAddr: host.ipAddresses
         };
       });
       setHosts(hosts2);
@@ -221,14 +233,18 @@ const HUconsumption = () => {
           striped
           hover
           condensed
-          search>
+          search >
           {(props) => (
             <div>
-              <h3>Search or filter by any data:</h3>
+              <h3>Global Search:</h3>
               <SearchBar {...props.searchProps} />
-              <ClearSearchButton {...props.searchProps} />
+              <Button
+              size='xs'
+              style={{ backgroundColor: '#4fd5e0', border: 'none', margin: '10px', paddingTop: '0', paddingBottom: '0' }}>
+              <ClearSearchButton {...props.searchProps}/>  
+            </Button>
               <hr />
-              <BootstrapTable {...props.baseProps} />
+              <BootstrapTable {...props.baseProps} filter={ filterFactory() }/>
             </div>
           )}
         </ToolkitProvider>
