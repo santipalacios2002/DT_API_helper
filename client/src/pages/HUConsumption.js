@@ -62,13 +62,7 @@ const defaultSorted = [
 
 let totalHUsConsumed = 0;
 let HUdata = [];
-const SearchBooks = () => {
-  // create state for holding returned google api data
-  const [searchedBooks, setSearchedBooks] = useState([]);
-  // create state for holding our search field data
-  const [searchInput, setSearchInput] = useState('');
-  // create state to hold saved bookId values
-  const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
+const HUconsumption = () => {
 
   // create state for holding our tenantId field data  **SANTIAGO
   const [tenantId, setTenantId] = useState('');
@@ -82,46 +76,9 @@ const SearchBooks = () => {
   // create state for the loading flag  **SANTIAGO
   const [isLoading, setIsLoading] = useState(false);
   // console.log('isLoading:', isLoading)
-  // creates state for sorting fields
-  const [sortedField, setSortedField] = useState(null);
 
-  // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
-  // learn more here: https://reactjs.org/docs/hooks-effect.html#effects-with-cleanup
-  useEffect(() => {
-    return () => saveBookIds(savedBookIds);
-  });
 
-  // create method to search for books and set state on form submit
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
 
-    if (!searchInput) {
-      return false;
-    }
-
-    try {
-      const response = await searchGoogleBooks(searchInput);
-
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const { items } = await response.json();
-
-      const bookData = items.map((book) => ({
-        bookId: book.id,
-        authors: book.volumeInfo.authors || ['No author to display'],
-        title: book.volumeInfo.title,
-        description: book.volumeInfo.description,
-        image: book.volumeInfo.imageLinks?.thumbnail || '',
-      }));
-
-      setSearchedBooks(bookData);
-      setSearchInput('');
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   // create method to get the information from the tenant
   const handleDynatraceFormSubmit = async (event) => {
@@ -202,32 +159,6 @@ const SearchBooks = () => {
     }
   };
 
-  // create function to handle saving a book to our database
-  const handleSaveBook = async (bookId) => {
-    // find the book in `searchedBooks` state by the matching id
-    const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
-
-    // get token
-    const token = Auth.loggedIn() ? Auth.getToken() : null;
-
-    if (!token) {
-      return false;
-    }
-
-    try {
-      const response = await saveBook(bookToSave, token);
-
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      // if book successfully saves to user's account, save book id to state
-      setSavedBookIds([...savedBookIds, bookToSave.bookId]);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   return (
     <>
       <Jumbotron
@@ -236,25 +167,6 @@ const SearchBooks = () => {
         style={{ backgroundColor: '#191919' }}>
         <Container>
           <h1>Get your Host unit Consumption!</h1>
-          {/*           <Form onSubmit={handleFormSubmit}>
-            <Form.Row>
-              <Col xs={12} md={8}>
-                <Form.Control
-                  name='searchInput'
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  type='text'
-                  size='lg'
-                  placeholder='Search for a book'
-                />
-              </Col>
-              <Col xs={12} md={4}>
-                <Button type='submit' variant='success' size='lg'>
-                  Submit Search
-                </Button>
-              </Col>
-            </Form.Row>
-  </Form> */}
           {/* copy for the form for tenant and token SANTIAGO */}
           {/* =============================================== */}
           <Form onSubmit={handleDynatraceFormSubmit}>
@@ -300,59 +212,6 @@ const SearchBooks = () => {
             ? `Your tenant is consuming a total of ${totalHUsConsumed} with ${Hosts.length} Hosts`
             : <div className="justify-content-md-center" >Enter your tenant and API token</div>}
         </h2>
-        {/*         {isLoading ? (
-          'Loading...'
-        ) : (
-          <Table
-            striped
-            bordered
-            hover
-            variant="dark"
-            hidden={isLoading || Hosts.length === 0}>
-            <thead>
-              <tr>
-                <th>
-                  <button type='button' onClick={() => setSortedField('index')}>
-                    #
-                  </button>
-                </th>
-                <th>
-                  <button type='button' onClick={() => setSortedField('index')}>
-                    Host Name
-                  </button>
-                </th>
-                <th>
-                <button type='button' onClick={() => setSortedField('index')}>
-                Host Entity ID
-              </button>
-              </th>
-                <th>
-                <button type='button' onClick={() => setSortedField('index')}>
-                Consumed HUs
-              </button>
-                </th>
-                <th>
-                <button type='button' onClick={() => setSortedField('index')}>
-                Monitoring Mode
-              </button> 
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {Hosts.map((host, index) => {
-                return (
-                  <tr key={host.entityId}>
-                  <td>{index + 1}</td>
-                  <td>{host.displayName}</td>
-                  <td>{host.entityId}</td>
-                  <td>{host.consumedHUs}</td>
-                  <td>{host.monitoringMode}</td>
-                  </tr>
-                  );
-                })}
-                </tbody>
-                </Table>
-              )} */}
         <ToolkitProvider
           bootstrap4
           keyField='entityId'
@@ -373,43 +232,9 @@ const SearchBooks = () => {
             </div>
           )}
         </ToolkitProvider>
-        {/* <CardColumns>
-          {searchedBooks.map((book) => {
-            return (
-              <Card key={book.bookId} border='dark'>
-                {book.image ? (
-                  <Card.Img
-                    src={book.image}
-                    alt={`The cover for ${book.title}`}
-                    variant='top'
-                  />
-                ) : null}
-                <Card.Body>
-                  <Card.Title>{book.title}</Card.Title>
-                  <p className='small'>Authors: {book.authors}</p>
-                  <Card.Text>{book.description}</Card.Text>
-                  {Auth.loggedIn() && (
-                    <Button
-                      disabled={savedBookIds?.some(
-                        (savedBookId) => savedBookId === book.bookId
-                      )}
-                      className='btn-block btn-info'
-                      onClick={() => handleSaveBook(book.bookId)}>
-                      {savedBookIds?.some(
-                        (savedBookId) => savedBookId === book.bookId
-                      )
-                        ? 'This book has already been saved!'
-                        : 'Save this Book!'}
-                    </Button>
-                  )}
-                </Card.Body>
-              </Card>
-            );
-          })}
-        </CardColumns> */}
       </Container>
     </>
   );
 };
 
-export default SearchBooks;
+export default HUconsumption;

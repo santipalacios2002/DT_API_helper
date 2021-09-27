@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, Nav, Container, Modal, Tab } from 'react-bootstrap';
+import { Navbar, NavDropdown, Nav, Container, Modal, Tab } from 'react-bootstrap';
 import SignUpForm from './SignupForm';
 import LoginForm from './LoginForm';
 
@@ -15,15 +15,17 @@ const AppNavbar = () => {
       <Navbar bg='dark' variant='dark' expand='lg'>
         <Container fluid>
           <Navbar.Brand as={Link} to='/'>
-            Google Books Search
+            Main Menu
           </Navbar.Brand>
-          <Navbar.Toggle aria-controls='navbar' />
-          <Navbar.Collapse id='navbar'>
-            <Nav className='ml-auto'>
-              <Nav.Link as={Link} to='/'>
-                Search For Books
-              </Nav.Link>
-              {/* if user is logged in show saved books and logout */}
+          <Navbar.Toggle aria-controls='responsive-navbar-nav' />
+          <Navbar.Collapse id="responsive-navbar-nav" >
+            <Nav className='me-auto'>
+              <NavDropdown title="Features" id="basic-nav-dropdown">
+              <NavDropdown.Item href="/HUconsumption">HU Consumption</NavDropdown.Item>
+              <NavDropdown.Item href="/comingSoon">Coming Soon</NavDropdown.Item>
+              <NavDropdown.Item href="/comingSoon">Coming Soon</NavDropdown.Item>
+            </NavDropdown>
+              {/* if user is logged in show saved books and logout 
               {Auth.loggedIn() ? (
                 <>
                   <Nav.Link as={Link} to='/saved'>
@@ -33,7 +35,7 @@ const AppNavbar = () => {
                 </>
               ) : (
                 <Nav.Link onClick={() => setShowModal(true)}>Login/Sign Up</Nav.Link>
-              )}
+              )} */}
             </Nav>
           </Navbar.Collapse>
         </Container>
