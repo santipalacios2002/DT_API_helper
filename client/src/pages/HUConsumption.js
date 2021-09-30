@@ -5,27 +5,18 @@ import {
   Col,
   Form,
   Button,
-  Card,
-  CardColumns,
-  Table,
 } from 'react-bootstrap';
-import Auth from '../utils/auth';
 import {
-  saveBook,
-  searchGoogleBooks,
   getHostUnitConsumption,
 } from '../utils/API';
-import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
 import Swal from 'sweetalert2';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, {
   Search,
-  CSVExport,
 } from 'react-bootstrap-table2-toolkit';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 
-// const products = [ {id: 1, name: 'hello', entityId: '1234', hus: 2, mon_mode: 'full'} ];
 const { SearchBar, ClearSearchButton } = Search;
 const columns = [
   {
@@ -85,6 +76,10 @@ const HUconsumption = () => {
   // create state for the loading flag  **SANTIAGO
   const [isLoading, setIsLoading] = useState(false);
   // console.log('isLoading:', isLoading)
+  // create state for management zone  **SANTIAGO
+  const [mgmtZone, setmgmtZone] = useState('');
+  // create state for tags  **SANTIAGO
+  const [tag, setTag] = useState('');
 
 
 
@@ -96,15 +91,23 @@ const HUconsumption = () => {
 
     Swal.fire({
       title: 'Loading',
-      // html: 'I will close in <b></b> milliseconds.',
       timerProgressBar: true,
       didOpen: () => {
-        Swal.showLoading();
+        if ((tenantId || apiToken)){
+          Swal.showLoading();
+        }
       },
     });
 
     // console.log('dynatrace handled: ', {tenantId, apiToken})
     if (!(tenantId || apiToken)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Please make sure you have a tenant and token',
+        timer: 3000,
+        timerProgressBar: true,
+      });
       console.log('something is missing');
       return false;
     }
@@ -120,6 +123,8 @@ const HUconsumption = () => {
           icon: 'error',
           title: 'Oops...',
           text: 'Something went wrong!',
+          timer: 3000,
+          timerProgressBar: true,
           footer: `<strong>${response.status} - (${response.statusText}). Please verify tenant and token</strong>`,
         });
         setIsLoading(false);
@@ -179,8 +184,6 @@ const HUconsumption = () => {
         style={{ backgroundColor: '#191919' }}>
         <Container>
           <h1>Get your Host unit Consumption!</h1>
-          {/* copy for the form for tenant and token SANTIAGO */}
-          {/* =============================================== */}
           <Form onSubmit={handleDynatraceFormSubmit}>
             <Form.Row>
               <Col xs={12} md={8} className='mb-3'>

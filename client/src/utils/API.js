@@ -59,10 +59,19 @@ export const searchGoogleBooks = (query) => {
 
 // this is to get all the 
 export const getHostUnitConsumption = (tenantId, apiToken) => {
-  return fetch(`${tenantId}api/v1/entity/infrastructure/hosts`, {
+  return fetch(`${tenantId}api/v1/entity/infrastructure/hosts?showMonitoringCandidates=false`, {
     headers: {
       'Content-Type': 'application/json',
       authorization: `Api-Token ${apiToken}`,
     },
   });
 }
+
+// export const getHostUnitConsumption = (tenantId, apiToken) => {
+//   return fetch(`${tenantId}api/v1/entity/infrastructure/hosts`, {
+//     headers: {
+//       'Content-Type': 'application/json',
+//       authorization: `Api-Token ${apiToken}`,
+//     },
+//   });
+// }
