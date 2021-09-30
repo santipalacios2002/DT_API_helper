@@ -22,8 +22,7 @@ const AppNavbar = () => {
             <Nav className='me-auto'>
               <NavDropdown title="Features" id="basic-nav-dropdown">
               <NavDropdown.Item href="/HUconsumption">HU Consumption</NavDropdown.Item>
-              <NavDropdown.Item href="/K8sReport">K8s Report</NavDropdown.Item>
-              <NavDropdown.Item href="/comingSoon">Coming Soon</NavDropdown.Item>
+              <NavDropdown.Item href="/">K8s Report (Coming Soon)</NavDropdown.Item>
             </NavDropdown>
               {/* if user is logged in show saved books and logout 
               {Auth.loggedIn() ? (
