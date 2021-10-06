@@ -1,21 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Jumbotron,
-  Container,
-  Col,
-  Form,
-  Button,
-} from 'react-bootstrap';
-import {
-  getHostUnitConsumption,
-} from '../utils/API';
+import React, { useState } from 'react';
+import { Jumbotron, Container, Col, Form, Button } from 'react-bootstrap';
+import { getHostUnitConsumption } from '../utils/API';
 import Swal from 'sweetalert2';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
-import ToolkitProvider, {
-  Search,
-} from 'react-bootstrap-table2-toolkit';
+import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
+import ReactTagInput from '@pathofdev/react-tag-input';
+import '@pathofdev/react-tag-input/build/index.css';
 
 const { SearchBar, ClearSearchButton } = Search;
 const columns = [
@@ -63,7 +55,6 @@ const defaultSorted = [
 let totalHUsConsumed = 0;
 let HUdata = [];
 const HUconsumption = () => {
-
   // create state for holding our tenantId field data  **SANTIAGO
   const [tenantId, setTenantId] = useState('');
   // create state for holding our API Token field data  **SANTIAGO
@@ -72,34 +63,21 @@ const HUconsumption = () => {
   const [total, setTotal] = useState(false);
   // create state for the hosts  **SANTIAGO
   const [Hosts, setHosts] = useState([]);
-  // console.log('Hosts:', Hosts)
-  // create state for the loading flag  **SANTIAGO
-  const [isLoading, setIsLoading] = useState(false);
-  // console.log('isLoading:', isLoading)
-  // create state for management zone  **SANTIAGO
-  const [mgmtZone, setmgmtZone] = useState('');
-  // create state for tags  **SANTIAGO
-  const [tag, setTag] = useState('');
-
-
-
+  // // create state for tags  **SANTIAGO
+  const [tags, setTags] = useState([]);
 
   // create method to get the information from the tenant
   const handleDynatraceFormSubmit = async (event) => {
     event.preventDefault();
-    setIsLoading(true);
-
     Swal.fire({
       title: 'Loading',
       timerProgressBar: true,
       didOpen: () => {
-        if ((tenantId || apiToken)){
+        if (tenantId || apiToken) {
           Swal.showLoading();
         }
       },
     });
-
-    // console.log('dynatrace handled: ', {tenantId, apiToken})
     if (!(tenantId || apiToken)) {
       Swal.fire({
         icon: 'error',
@@ -115,10 +93,15 @@ const HUconsumption = () => {
     localStorage.setItem('apiToken', apiToken);
 
     try {
-      const response = await getHostUnitConsumption(tenantId, apiToken);
+      const apiTags = tags.length === 0 ? '' : `&tag=${tags.toString()}`;
+      console.log(apiTags);
+      const response = await getHostUnitConsumption(
+        tenantId,
+        apiToken,
+        apiTags
+      );
 
       if (!response.ok) {
-        // console.log('response!!!!!!!:', response)
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
@@ -127,13 +110,11 @@ const HUconsumption = () => {
           timerProgressBar: true,
           footer: `<strong>${response.status} - (${response.statusText}). Please verify tenant and token</strong>`,
         });
-        setIsLoading(false);
         throw new Error('something went wrong!');
       }
       const last10min = Date.now() - 600000;
       console.log('last10min:', last10min);
       const items = await response.json();
-      // console.log('items:', items)
       HUdata = items
         .map((host) => {
           if (host.lastSeenTimestamp > last10min) {
@@ -142,7 +123,7 @@ const HUconsumption = () => {
               entityId: host.entityId,
               consumedHUs: host.consumedHostUnits,
               monitoringMode: host.monitoringMode,
-              ipAddresses: host.ipAddresses.map(ip => `${ip}, `)
+              ipAddresses: host.ipAddresses.map((ip) => `${ip}, `),
             };
           } else return;
         })
@@ -154,8 +135,6 @@ const HUconsumption = () => {
         0
       );
       setTotal(true);
-      setHosts(HUdata);
-      console.log('HUdata:', HUdata)
       const hosts2 = HUdata.map((host, index) => {
         return {
           id: index + 1,
@@ -163,13 +142,11 @@ const HUconsumption = () => {
           entityId: host.entityId,
           hus: host.consumedHUs,
           mon_mode: host.monitoringMode,
-          ipAddr: host.ipAddresses
+          ipAddr: host.ipAddresses,
         };
       });
       setHosts(hosts2);
-      console.log('hosts2:', hosts2);
       localStorage.setItem('totalHUs', totalHUsConsumed);
-      setIsLoading(false);
       Swal.close();
     } catch (err) {
       console.error(err);
@@ -191,9 +168,21 @@ const HUconsumption = () => {
                   name='tenantId'
                   value={tenantId}
                   onChange={(e) => setTenantId(e.target.value)}
+                  onKeyPress={(e) => {
+                    e.key === 'Enter' && e.preventDefault();
+                  }}
                   type='text'
                   size='lg'
                   placeholder='https://TENANT_ID.live.dynatrace.com/'
+                />
+              </Col>
+            </Form.Row>
+            <Form.Row>
+              <Col xs={12} md={8} className='mb-3'>
+                <ReactTagInput
+                  tags={tags}
+                  placeholder='Enter your HOST tags'
+                  onChange={(newTags) => setTags(newTags)}
                 />
               </Col>
             </Form.Row>
@@ -203,6 +192,9 @@ const HUconsumption = () => {
                   name='apiToken'
                   value={apiToken}
                   onChange={(e) => setapiToken(e.target.value)}
+                  onKeyPress={(e) => {
+                    e.key === 'Enter' && e.preventDefault();
+                  }}
                   type='password'
                   size='lg'
                   placeholder='API Token'
@@ -223,9 +215,13 @@ const HUconsumption = () => {
       </Jumbotron>
       <Container fluid>
         <h2>
-          {total
-            ? `Your tenant is consuming a total of ${totalHUsConsumed} with ${Hosts.length} Hosts`
-            : <div className="justify-content-md-center" >Enter your tenant and API token</div>}
+          {total ? (
+            `Your tenant is consuming a total of ${totalHUsConsumed} with ${Hosts.length} Hosts`
+          ) : (
+            <div className='justify-content-md-center'>
+              Enter your tenant and API token
+            </div>
+          )}
         </h2>
         <ToolkitProvider
           bootstrap4
@@ -236,18 +232,24 @@ const HUconsumption = () => {
           striped
           hover
           condensed
-          search >
+          search>
           {(props) => (
             <div>
               <h3>Global Search:</h3>
               <SearchBar {...props.searchProps} />
               <Button
-              size='xs'
-              style={{ backgroundColor: '#4fd5e0', border: 'none', margin: '10px', paddingTop: '0', paddingBottom: '0' }}>
-              <ClearSearchButton {...props.searchProps}/>  
-            </Button>
+                size='xs'
+                style={{
+                  backgroundColor: '#4fd5e0',
+                  border: 'none',
+                  margin: '10px',
+                  paddingTop: '0',
+                  paddingBottom: '0',
+                }}>
+                <ClearSearchButton {...props.searchProps} />
+              </Button>
               <hr />
-              <BootstrapTable {...props.baseProps} filter={ filterFactory() }/>
+              <BootstrapTable {...props.baseProps} filter={filterFactory()} />
             </div>
           )}
         </ToolkitProvider>

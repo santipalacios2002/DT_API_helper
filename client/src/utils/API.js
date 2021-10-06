@@ -58,8 +58,8 @@ export const searchGoogleBooks = (query) => {
 
 
 // this is to get all the 
-export const getHostUnitConsumption = (tenantId, apiToken) => {
-  return fetch(`${tenantId}api/v1/entity/infrastructure/hosts?showMonitoringCandidates=false`, {
+export const getHostUnitConsumption = (tenantId, apiToken, tags) => {
+  return fetch(`${tenantId}api/v1/entity/infrastructure/hosts?showMonitoringCandidates=false${tags}`, {
     headers: {
       'Content-Type': 'application/json',
       authorization: `Api-Token ${apiToken}`,
