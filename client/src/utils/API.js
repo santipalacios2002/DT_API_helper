@@ -72,20 +72,17 @@ export const getHostUnitConsumption = (tenantId, apiToken, tags) => {
   );
 };
 
-export const k8sHUReportMemUsed = (tenantId, apiToken, tags) => {   //amount of memory in GB
+export const k8sHUReportMemUsed = (tenantId, apiToken, tags) => {
+  //amount of memory in GB
   const headers = {
     Authorization: `Api-Token ${apiToken}`,
     Accept: 'application/json',
   }; // headers used during api calls
   let k8shosts = []; // array to store list of k8s hosts
   let apiURI = ''; // used to stage api endpoints before querying
-  let totalMem = 0;
-  let totalHU = 0;
-  let totalOldHU = 0; // to calculate total memory and HUs
   let removeHosts = []; // list of k8s hosts with no memory metrics for the period
   let detailData = []; // fow raw data report when detailedReport is enabled
   let nextKey = null; // to track next page key so we can handle pagination
-  const huFactor = 16; // number of GB per HU
   const percentileCutoff = 99; // percentile to calculate HU
   // route to get logged in user's info (needs the token)
   const detailedReport = false;
@@ -94,7 +91,7 @@ export const k8sHUReportMemUsed = (tenantId, apiToken, tags) => {   //amount of 
   const d = new Date();
   d.setMonth(d.getMonth() - 1);
   const y = d.getFullYear(),
-    m = d.getMonth();
+  m = d.getMonth();
   const from = new Date(y, m, 1).getTime();
   const to = new Date(y, m + 1, 0).getTime();
 
@@ -126,7 +123,6 @@ export const k8sHUReportMemUsed = (tenantId, apiToken, tags) => {   //amount of 
       k8shosts = await k8shosts.filter(function (el) {
         return el != null;
       });
-      await console.log('k8shosts!!!!!!!!!!!!!!!!:', k8shosts)
     } catch (err) {
       console.log(err);
     }
@@ -140,7 +136,6 @@ export const k8sHUReportMemUsed = (tenantId, apiToken, tags) => {   //amount of 
         headers: headers,
       });
       let rj = await r.json();
-      console.log('rj:', rj)
       nextKey = rj.nextPageKey;
       await Promise.all(
         rj.result[0].data.map(async (h) => {
@@ -202,16 +197,10 @@ export const k8sHUReportMemUsed = (tenantId, apiToken, tags) => {   //amount of 
           k8shosts.map(async (host) => {
             // if there's no memory metrics for the host, it wasn't running during the period
             if (host.hasOwnProperty('memory')) {
-              let memInGb = parseFloat((host.memory / 1073741824).toFixed(2)); // SANTI need to comment "/ 1073741824" for mem usage
-              // let hu = Math.ceil(memInGb / huFactor);
-              // hu = hu > host.consumedHostUnits ? host.consumedHostUnits : hu; // in case host is at or near capacity
-              host.memory = memInGb; // SANTI need to comment for mem usage
-              // totalMem += host.memory;
-              // host.hostUnits = hu;
-              // totalHU += hu;
-              // totalOldHU += host.consumedHostUnits;
+              let memInGb = parseFloat((host.memory / 1073741824).toFixed(2));
+              host.memory = memInGb;
             } else {
-              removeHosts.push(host)
+              removeHosts.push(host);
             }
           });
         })
@@ -219,19 +208,9 @@ export const k8sHUReportMemUsed = (tenantId, apiToken, tags) => {   //amount of 
           console.log(error);
         })
         .finally(async () => {
-          // stage csv, add totals and dump everything to a file
           for (let x = removeHosts.length - 1; x > -1; x--) {
             k8shosts.splice(removeHosts[x], 1);
           }
-          const totals = [
-            {
-              entityId: 'TOTALS',
-              displayName: '',
-              memory: totalMem,
-              consumedHostUnits: totalOldHU,
-              hostUnits: totalHU,
-            },
-          ];
         })
         .catch((error) => {
           console.log(error);
@@ -244,9 +223,6 @@ export const k8sHUReportMemUsed = (tenantId, apiToken, tags) => {   //amount of 
     .then(async () => {
       return {
         hosts: k8shosts,
-        // totalMem,
-        // totalOldHU,
-        // totalHU,
         removed: removeHosts,
       }; ////////now memory usage
     });
@@ -259,16 +235,10 @@ export const k8sHUReportMemUsage = (tenantId, apiToken, tags) => {
   }; // headers used during api calls
   let k8shosts = []; // array to store list of k8s hosts
   let apiURI = ''; // used to stage api endpoints before querying
-  let totalMem = 0;
-  let totalHU = 0;
-  let totalOldHU = 0; // to calculate total memory and HUs
   let removeHosts = []; // list of k8s hosts with no memory metrics for the period
-  let detailData = []; // fow raw data report when detailedReport is enabled
   let nextKey = null; // to track next page key so we can handle pagination
-  const huFactor = 16; // number of GB per HU
   const percentileCutoff = 99; // percentile to calculate HU
   // route to get logged in user's info (needs the token)
-  const detailedReport = false;
 
   // get start and end timestamps based on last month
   const d = new Date();
@@ -311,13 +281,12 @@ export const k8sHUReportMemUsage = (tenantId, apiToken, tags) => {
     .then(async () => {
       // Fetch metrics for memory utilization
       apiURI = 'api/v2/metrics/query';
-      let queryString = `?metricSelector=builtin:host.mem.usage:max&resolution=1h&from=${from}&to=${to}`; //SANTI needs to change from used to usage
+      let queryString = `?metricSelector=builtin:host.mem.usage:max&resolution=1h&from=${from}&to=${to}`;
       console.log(`${tenantId}${apiURI}${queryString}&pageSize=100`);
       let r = await fetch(`${tenantId}${apiURI}${queryString}&pageSize=100`, {
         headers: headers,
       });
       let rj = await r.json();
-      console.log('rj:', rj)
       nextKey = rj.nextPageKey;
       await Promise.all(
         rj.result[0].data.map(async (h) => {
@@ -371,9 +340,9 @@ export const k8sHUReportMemUsage = (tenantId, apiToken, tags) => {
           k8shosts.map(async (host) => {
             // if there's no memory metrics for the host, it wasn't running during the period
             if (host.hasOwnProperty('memoryUsage')) {
-              host.memoryUsage = parseFloat((host.memoryUsage).toFixed(2));
+              host.memoryUsage = parseFloat(host.memoryUsage.toFixed(2));
             } else {
-              removeHosts.push(host)
+              removeHosts.push(host);
             }
           });
         })
@@ -397,9 +366,7 @@ export const k8sHUReportMemUsage = (tenantId, apiToken, tags) => {
     .then(async () => {
       return {
         hosts: k8shosts,
-        removed: removeHosts
+        removed: removeHosts,
       }; ////////now memory usage
     });
 };
-
-

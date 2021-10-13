@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { Jumbotron, Container, Col, Form, Button } from 'react-bootstrap';
-import {
-  getHostUnitConsumption,
-  k8sHUReportMemUsed,
-  k8sHUReportMemUsage,
-} from '../utils/API';
+import { k8sHUReportMemUsed, k8sHUReportMemUsage } from '../utils/API';
 import Swal from 'sweetalert2';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
-import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit';
+import ToolkitProvider, {
+  Search,
+  CSVExport,
+} from 'react-bootstrap-table2-toolkit';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import ReactTagInput from '@pathofdev/react-tag-input';
 import '@pathofdev/react-tag-input/build/index.css';
@@ -18,7 +17,6 @@ const { ExportCSVButton } = CSVExport;
 const d = new Date();
 d.setMonth(d.getMonth() - 1);
 const options = { month: 'long' };
-const m = d.getMonth()
 const columns = [
   {
     dataField: 'id',
@@ -76,7 +74,7 @@ const K8sReport = () => {
   const [Hosts, setHosts] = useState([]);
   // // create state for tags  **SANTIAGO
   const [tags, setTags] = useState([]);
-  
+
   // create method to get the information from the tenant
   const handleDynatraceFormSubmit = async (event) => {
     event.preventDefault();
@@ -101,17 +99,10 @@ const K8sReport = () => {
       console.log('something is missing');
       return false;
     }
-    localStorage.setItem('tenantUrl', tenantId);
-    localStorage.setItem('apiToken', apiToken);
-    
-    try {
-      console.log('tenantId:', tenantId);
-      console.log('apiToken:', apiToken);
 
+    try {
       const response = await k8sHUReportMemUsed(tenantId, apiToken, tags);
-      console.log('response MEM used:', response);
       const response2 = await k8sHUReportMemUsage(tenantId, apiToken, tags);
-      console.log('response Mem Usage:', response2);
       if (!response.hosts) {
         Swal.fire({
           icon: 'error',
@@ -123,12 +114,9 @@ const K8sReport = () => {
         });
         throw new Error('something went wrong!');
       }
-      const last10min = Date.now() - 600000;
-      console.log('last10min:', last10min);
+      
       const items = await response;
       const items2 = await response2;
-      console.log('items:', items);
-      console.log('items2:', items2);
       for (let index = 0; index < items.hosts.length; index++) {
         const memUsage = parseFloat(
           (
@@ -170,13 +158,6 @@ const K8sReport = () => {
         (total, value) => total + value.hostUnits,
         0
       ).toFixed(2);
-      console.log('totalHUsConsumed:', totalHUsConsumed);
-
-      if (items.hosts.length === items2.hosts.length) {
-        console.log('horray!');
-        console.log('HUdata:', HUdata);
-      }
-
       setTotal(true);
 
       const hosts2 = HUdata.map((host, index) => {
@@ -187,7 +168,7 @@ const K8sReport = () => {
           hus: host.consumedHostUnits,
           calculatedHUs: host.hostUnits,
           totalmemUsed: parseFloat(host.memoryTotalInGB.toFixed(1)),
-          memoryUsageInPer: host.memoryUsageInPer
+          memoryUsageInPer: host.memoryUsageInPer,
         };
       });
       setHosts(hosts2);
@@ -205,7 +186,10 @@ const K8sReport = () => {
         className='text-light'
         style={{ backgroundColor: '#191919' }}>
         <Container>
-          <h1>Get k8s consumption report for the month of {`${new Intl.DateTimeFormat('en-US', options).format(d)}`}</h1>
+          <h1>
+            Get k8s consumption report for the month of{' '}
+            {`${new Intl.DateTimeFormat('en-US', options).format(d)}`}
+          </h1>
           <Form onSubmit={handleDynatraceFormSubmit}>
             <Form.Row>
               <Col xs={12} md={8} className='mb-3'>
@@ -261,7 +245,7 @@ const K8sReport = () => {
       <Container fluid>
         <h2>
           {total ? (
-            `Your tenant is consuming a total of ${totalHUsConsumed} Host Units with ${Hosts.length} Hosts`
+            `Your tenant is consuming a total of ${totalHUsConsumed} Calculate Host Units as per the contract across ${Hosts.length} Hosts`
           ) : (
             <div className='justify-content-md-center'>
               Enter your tenant and API token
@@ -295,16 +279,18 @@ const K8sReport = () => {
               </Button>
               <hr />
               <Button
-              size='xs'
-              style={{
-                backgroundColor: '#4fd5e0',
-                border: 'none',
-                margin: '10px',
-                paddingTop: '0',
-                paddingBottom: '0',
-              }}>
-              <ExportCSVButton { ...props.csvProps }>Export to CSV</ExportCSVButton>
-            </Button>
+                size='xs'
+                style={{
+                  backgroundColor: '#4fd5e0',
+                  border: 'none',
+                  margin: '10px',
+                  paddingTop: '0',
+                  paddingBottom: '0',
+                }}>
+                <ExportCSVButton {...props.csvProps}>
+                  Export to CSV
+                </ExportCSVButton>
+              </Button>
               <BootstrapTable {...props.baseProps} filter={filterFactory()} />
             </div>
           )}
