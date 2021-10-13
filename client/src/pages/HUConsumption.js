@@ -89,16 +89,14 @@ const HUconsumption = () => {
       console.log('something is missing');
       return false;
     }
-    localStorage.setItem('tenantUrl', tenantId);
-    localStorage.setItem('apiToken', apiToken);
+    // localStorage.setItem('tenantUrl', tenantId);
+    // localStorage.setItem('apiToken', apiToken);
 
     try {
-      const apiTags = tags.length === 0 ? '' : `&tag=${tags.toString()}`;
-      console.log(apiTags);
       const response = await getHostUnitConsumption(
         tenantId,
         apiToken,
-        apiTags
+        tags
       );
 
       if (!response.ok) {
@@ -127,26 +125,23 @@ const HUconsumption = () => {
             };
           } else return;
         })
-        .filter((o) => o !== undefined);
-
-      // console.log(HUdata)
+        .filter((o) => o !== undefined).map((host, index) => {
+          return {
+            id: index + 1,
+            name: host.displayName,
+            entityId: host.entityId,
+            hus: host.consumedHUs,
+            mon_mode: host.monitoringMode,
+            ipAddr: host.ipAddresses,
+          };
+        });;
       totalHUsConsumed = HUdata.reduce(
-        (total, value) => total + value.consumedHUs,
+        (total, value) => total + value.hus,
         0
       );
       setTotal(true);
-      const hosts2 = HUdata.map((host, index) => {
-        return {
-          id: index + 1,
-          name: host.displayName,
-          entityId: host.entityId,
-          hus: host.consumedHUs,
-          mon_mode: host.monitoringMode,
-          ipAddr: host.ipAddresses,
-        };
-      });
-      setHosts(hosts2);
-      localStorage.setItem('totalHUs', totalHUsConsumed);
+      setHosts(HUdata);
+      // localStorage.setItem('totalHUs', totalHUsConsumed);
       Swal.close();
     } catch (err) {
       console.error(err);

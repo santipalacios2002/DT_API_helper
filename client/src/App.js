@@ -13,7 +13,6 @@ function App() {
         <Navbar /> 
         <Switch>
           <Route exact path='/' render={() => <h1 className='display-2'>Click on "Features"</h1>}/>
-{/*           <Route exact path='/' component={SearchBooks} /> */}
           <Route exact path='/HUconsumption' component={HUconsumption} />
           <Route exact path='/K8sreport' component={K8sReport} />
           <Route exact path='/saved' component={SavedBooks} />
