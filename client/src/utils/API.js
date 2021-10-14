@@ -91,7 +91,7 @@ export const k8sHUReportMemUsed = (tenantId, apiToken, tags) => {
   const d = new Date();
   d.setMonth(d.getMonth() - 1);
   const y = d.getFullYear(),
-  m = d.getMonth();
+    m = d.getMonth();
   const from = new Date(y, m, 1).getTime();
   const to = new Date(y, m + 1, 0).getTime();
 
@@ -370,3 +370,4 @@ export const k8sHUReportMemUsage = (tenantId, apiToken, tags) => {
       }; ////////now memory usage
     });
 };
+

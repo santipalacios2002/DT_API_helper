@@ -4,12 +4,13 @@ import { getHostUnitConsumption } from '../utils/API';
 import Swal from 'sweetalert2';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
-import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
+import ToolkitProvider, { Search, CSVExport } from 'react-bootstrap-table2-toolkit';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import ReactTagInput from '@pathofdev/react-tag-input';
 import '@pathofdev/react-tag-input/build/index.css';
 
 const { SearchBar, ClearSearchButton } = Search;
+const { ExportCSVButton } = CSVExport;
 const columns = [
   {
     dataField: 'id',
@@ -241,9 +242,21 @@ const HUconsumption = () => {
                   paddingTop: '0',
                   paddingBottom: '0',
                 }}>
-                <ClearSearchButton {...props.searchProps} />
               </Button>
               <hr />
+              <Button
+                size='xs'
+                style={{
+                  backgroundColor: '#4fd5e0',
+                  border: 'none',
+                  margin: '10px',
+                  paddingTop: '0',
+                  paddingBottom: '0',
+                }}>
+                <ExportCSVButton {...props.csvProps}>
+                  Export to CSV
+                </ExportCSVButton>
+              </Button>
               <BootstrapTable {...props.baseProps} filter={filterFactory()} />
             </div>
           )}
