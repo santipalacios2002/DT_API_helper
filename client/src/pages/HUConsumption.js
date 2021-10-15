@@ -84,7 +84,7 @@ const HUconsumption = () => {
         icon: 'error',
         title: 'Oops...',
         text: 'Please make sure you have a tenant and token',
-        timer: 3000,
+        timer: 3500,
         timerProgressBar: true,
       });
       console.log('something is missing');
@@ -242,8 +242,9 @@ const HUconsumption = () => {
                   paddingTop: '0',
                   paddingBottom: '0',
                 }}>
+                <ClearSearchButton {...props.searchProps} />
               </Button>
-              <hr />
+             
               <Button
                 size='xs'
                 style={{

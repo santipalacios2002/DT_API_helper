@@ -114,7 +114,7 @@ const K8sReport = () => {
         });
         throw new Error('something went wrong!');
       }
-      
+
       const items = await response;
       const items2 = await response2;
       for (let index = 0; index < items.hosts.length; index++) {
@@ -142,16 +142,28 @@ const K8sReport = () => {
           host.hostUnits = parseFloat(
             ((host.memoryTotalInGB * 0.125) / 16).toFixed(1)
           );
+          if (host.hostUnits%1 !== 0.5) {
+            host.hostUnits = Math.ceil(host.hostUnits)
+          }
         } else if (host.memoryUsageInPer < 20) {
           host.hostUnits = parseFloat(
             ((host.memoryTotalInGB * 0.25) / 16).toFixed(1)
           );
+          if (host.hostUnits%1 !== 0.5) {
+            host.hostUnits = Math.ceil(host.hostUnits)
+          }
         } else if (host.memoryUsageInPer < 40) {
           host.hostUnits = parseFloat(
             ((host.memoryTotalInGB * 0.5) / 16).toFixed(1)
           );
+          if (host.hostUnits%1 !== 0.5) {
+            host.hostUnits = Math.ceil(host.hostUnits)
+          }
         } else {
           host.hostUnits = parseFloat((host.memoryTotalInGB / 16).toFixed(1));
+          if (host.hostUnits%1 !== 0.5) {
+            host.hostUnits = Math.ceil(host.hostUnits)
+          }
         }
       });
       totalHUsConsumed = HUdata.reduce(
@@ -277,7 +289,6 @@ const K8sReport = () => {
                 }}>
                 <ClearSearchButton {...props.searchProps} />
               </Button>
-              <hr />
               <Button
                 size='xs'
                 style={{
