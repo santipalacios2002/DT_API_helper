@@ -72,6 +72,19 @@ export const getHostUnitConsumption = (tenantId, apiToken, tags) => {
   );
 };
 
+// this is to get all the monitors based on tags
+export const getSynMonitors = (tenantId, apiToken) => {
+  return fetch(
+    `${tenantId}api/v1/synthetic/monitors`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: `Api-Token ${apiToken}`,
+      },
+    }
+  );
+};
+
 export const k8sHUReportMemUsed = (tenantId, apiToken, tags) => {
   //amount of memory in GB
   const headers = {

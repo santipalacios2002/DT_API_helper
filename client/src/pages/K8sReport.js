@@ -142,27 +142,27 @@ const K8sReport = () => {
           host.hostUnits = parseFloat(
             ((host.memoryTotalInGB * 0.125) / 16).toFixed(1)
           );
-          if (host.hostUnits%1 !== 0.5) {
-            host.hostUnits = Math.ceil(host.hostUnits)
+          if (host.hostUnits % 1 !== 0.5) {
+            host.hostUnits = Math.ceil(host.hostUnits);
           }
         } else if (host.memoryUsageInPer < 20) {
           host.hostUnits = parseFloat(
             ((host.memoryTotalInGB * 0.25) / 16).toFixed(1)
           );
-          if (host.hostUnits%1 !== 0.5) {
-            host.hostUnits = Math.ceil(host.hostUnits)
+          if (host.hostUnits % 1 !== 0.5) {
+            host.hostUnits = Math.ceil(host.hostUnits);
           }
         } else if (host.memoryUsageInPer < 40) {
           host.hostUnits = parseFloat(
             ((host.memoryTotalInGB * 0.5) / 16).toFixed(1)
           );
-          if (host.hostUnits%1 !== 0.5) {
-            host.hostUnits = Math.ceil(host.hostUnits)
+          if (host.hostUnits % 1 !== 0.5) {
+            host.hostUnits = Math.ceil(host.hostUnits);
           }
         } else {
           host.hostUnits = parseFloat((host.memoryTotalInGB / 16).toFixed(1));
-          if (host.hostUnits%1 !== 0.5) {
-            host.hostUnits = Math.ceil(host.hostUnits)
+          if (host.hostUnits % 1 !== 0.5) {
+            host.hostUnits = Math.ceil(host.hostUnits);
           }
         }
       });
@@ -246,7 +246,11 @@ const K8sReport = () => {
                   type='submit'
                   variant='success'
                   size='lg'
-                  style={{ backgroundColor: '#4fd5e0', border: 'none' }}>
+                  style={{
+                    backgroundColor: '#4fd5e0',
+                    border: 'none',
+                    color: 'black',
+                  }}>
                   Submit Search
                 </Button>
               </Col>
@@ -254,59 +258,50 @@ const K8sReport = () => {
           </Form>
         </Container>
       </Jumbotron>
-      <Container fluid>
-        <h2>
-          {total ? (
-            `Your tenant is consuming a total of ${totalHUsConsumed} Calculate Host Units as per the contract across ${Hosts.length} Hosts`
-          ) : (
-            <div className='justify-content-md-center'>
-              Enter your tenant and API token
-            </div>
-          )}
-        </h2>
-        <ToolkitProvider
-          bootstrap4
-          keyField='entityId'
-          data={Hosts}
-          columns={columns}
-          defaultSorted={defaultSorted}
-          striped
-          hover
-          condensed
-          search>
-          {(props) => (
-            <div>
-              <h3>Global Search:</h3>
-              <SearchBar {...props.searchProps} />
-              <Button
-                size='xs'
-                style={{
-                  backgroundColor: '#4fd5e0',
-                  border: 'none',
-                  margin: '10px',
-                  paddingTop: '0',
-                  paddingBottom: '0',
-                }}>
+      {total ? (
+        <Container fluid>
+          <h2>
+            Your tenant is consuming a total of {totalHUsConsumed} Calculate
+            Host Units as per the contract across {Hosts.length} Hosts
+          </h2>
+          <ToolkitProvider
+            bootstrap4
+            keyField='entityId'
+            data={Hosts}
+            columns={columns}
+            defaultSorted={defaultSorted}
+            striped
+            hover
+            condensed
+            search>
+            {(props) => (
+              <div>
+                <h3>Global Search:</h3>
+                <SearchBar {...props.searchProps} />
                 <ClearSearchButton {...props.searchProps} />
-              </Button>
-              <Button
-                size='xs'
-                style={{
-                  backgroundColor: '#4fd5e0',
-                  border: 'none',
-                  margin: '10px',
-                  paddingTop: '0',
-                  paddingBottom: '0',
-                }}>
-                <ExportCSVButton {...props.csvProps}>
+                <ExportCSVButton
+                  size='xs'
+                  style={{
+                    backgroundColor: '#4fd5e0',
+                    border: 'none',
+                    marginLeft: '45%',
+                    marginRight: '40px',
+                    paddingTop: '8px',
+                    paddingBottom: '8px',
+                  }}
+                  {...props.csvProps}>
                   Export to CSV
                 </ExportCSVButton>
-              </Button>
-              <BootstrapTable {...props.baseProps} filter={filterFactory()} />
-            </div>
-          )}
-        </ToolkitProvider>
-      </Container>
+                <BootstrapTable {...props.baseProps} filter={filterFactory()} />
+              </div>
+            )}
+          </ToolkitProvider>
+        </Container>
+      ) : (
+        <h2 className='justify-content-md-center'>
+          Enter your tenant and API token
+        </h2>
+      )}
     </>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Jumbotron, Container, Col, Form, Button } from 'react-bootstrap';
-import { getHostUnitConsumption } from '../utils/API';
+import { getSynMonitors } from '../utils/API';
 import Swal from 'sweetalert2';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -21,32 +21,35 @@ const columns = [
     sort: true,
   },
   {
-    dataField: 'name',
-    text: 'Host Name',
+    dataField: 'synName',
+    text: "Monitor's name",
     filter: textFilter(),
     sort: true,
   },
   {
     dataField: 'entityId',
-    text: 'Host Entity ID',
+    text: 'Monitor Entity ID',
   },
   {
-    dataField: 'hus',
-    text: 'Consumed HUs',
+    dataField: 'type',
+    text: 'Monitor type',
     sort: true,
   },
   {
-    dataField: 'mon_mode',
-    text: 'Monitoring Mode',
+    dataField: 'status',
+    text: 'Status',
     filter: textFilter(),
     sort: true,
   },
-  {
-    dataField: 'ipAddr',
-    text: 'IP Addr',
-    filter: textFilter(),
-    sort: true,
-  },
+  // {
+  //   dataField: 'changeStatus',
+  //   text: 'Change Status',
+  //   events: {
+  //     onClick: (e, column, columnIndex, row) => {
+  //       console.log(row);
+  //     },
+  //   }
+  // }
 ];
 
 const defaultSorted = [
@@ -56,9 +59,24 @@ const defaultSorted = [
   },
 ];
 
+const selectRow = {
+  mode: 'checkbox',
+  clickToSelect: true,
+  selectColumnPosition: 'right',
+  style: { backgroundColor: '#c8e6c9' },
+  onSelect: (row, isSelect, rowIndex, e) => {
+    console.log(row);
+    console.log(isSelect);
+  },
+  onSelectAll: (isSelect, rows, e) => {
+    console.log(isSelect);
+    console.log(rows);
+  },
+};
+
 let totalHUsConsumed = 0;
 let HUdata = [];
-const HUconsumption = () => {
+const SyntheticMonitors = () => {
   // create state for holding our tenantId field data  **SANTIAGO
   const [tenantId, setTenantId] = useState('');
   // create state for holding our API Token field data  **SANTIAGO
@@ -66,7 +84,7 @@ const HUconsumption = () => {
   // create state for getting the total host units  **SANTIAGO
   const [total, setTotal] = useState(false);
   // create state for the hosts  **SANTIAGO
-  const [Hosts, setHosts] = useState([]);
+  const [Monitors, setMonitors] = useState([]);
   // // create state for tags  **SANTIAGO
   const [tags, setTags] = useState([]);
 
@@ -97,7 +115,8 @@ const HUconsumption = () => {
     // localStorage.setItem('apiToken', apiToken);
 
     try {
-      const response = await getHostUnitConsumption(tenantId, apiToken, tags);
+      const response = await getSynMonitors(tenantId, apiToken);
+      console.log('response:', response);
 
       if (!response.ok) {
         Swal.fire({
@@ -113,37 +132,28 @@ const HUconsumption = () => {
       const last10min = Date.now() - 600000;
       console.log('last10min:', last10min);
       const items = await response.json();
-      HUdata = items
-        .map((host) => {
-          if (host.lastSeenTimestamp > last10min) {
-            return {
-              displayName: host.displayName,
-              entityId: host.entityId,
-              consumedHUs: host.consumedHostUnits,
-              monitoringMode: host.monitoringMode,
-              ipAddresses: host.ipAddresses.map((ip) => `${ip}, `),
-            };
-          } else return;
-        })
-        .filter((o) => o !== undefined)
-        .map((host, index) => {
-          return {
-            id: index + 1,
-            name: host.displayName,
-            entityId: host.entityId,
-            hus: host.consumedHUs,
-            mon_mode: host.monitoringMode,
-            ipAddr: host.ipAddresses,
-          };
-        });
-      totalHUsConsumed = HUdata.reduce((total, value) => total + value.hus, 0);
+      const monitors = items.monitors.map((monitor, index) => {
+        return {
+          id: index + 1,
+          synName: monitor.name,
+          entityId: monitor.entityId,
+          type: monitor.type,
+          status: monitor.enabled,
+        };
+      });
+      console.log('monitors:', monitors);
+
       setTotal(true);
-      setHosts(HUdata);
-      // localStorage.setItem('totalHUs', totalHUsConsumed);
+      setMonitors(monitors);
       Swal.close();
     } catch (err) {
       console.error(err);
     }
+  };
+
+  const handleMonitorChanges = async (e) => {
+    // e.preventDefault();
+    console.log('here I am');
   };
 
   return (
@@ -153,7 +163,7 @@ const HUconsumption = () => {
         className='text-light'
         style={{ backgroundColor: '#191919' }}>
         <Container>
-          <h1>Get your Host unit Consumption!</h1>
+          <h1>Enable or disable your synthetic monitors</h1>
           <Form onSubmit={handleDynatraceFormSubmit}>
             <Form.Row>
               <Col xs={12} md={8} className='mb-3'>
@@ -210,22 +220,19 @@ const HUconsumption = () => {
           </Form>
         </Container>
       </Jumbotron>
-      {total ? (
-        <Container fluid>
-          <h2>
-            Your tenant is consuming a total of {totalHUsConsumed} with{' '}
-            {Hosts.length} Hosts
-          </h2>
+      <Container fluid>
+        {Monitors.length !== 0 ? (
           <ToolkitProvider
             bootstrap4
             keyField='entityId'
-            data={Hosts}
+            data={Monitors}
             columns={columns}
             defaultSorted={defaultSorted}
             striped
             hover
             condensed
-            search>
+            search
+            exportCSV>
             {(props) => (
               <div>
                 <h3>Global Search:</h3>
@@ -244,18 +251,33 @@ const HUconsumption = () => {
                   {...props.csvProps}>
                   Export to CSV
                 </ExportCSVButton>
-                <BootstrapTable {...props.baseProps} filter={filterFactory()} />
+                <Button
+                  onClick={handleMonitorChanges}
+                  style={{
+                    backgroundColor: '#4fd5e0',
+                    color: 'black',
+                    paddingTop: '8px',
+                    paddingBottom: '8px',
+                  }}>
+                  Change status of selected monitors
+                </Button>
+                <BootstrapTable
+                  selectRow={selectRow}
+                  {...props.baseProps}
+                  filter={filterFactory()}
+                />
               </div>
             )}
           </ToolkitProvider>
-        </Container>
-      ) : (
-        <h2 className='justify-content-md-center'>
-          Enter your tenant and API token
-        </h2>
-      )}
+        ) : (
+          <h3 className='justify-content-md-center'>
+            {' '}
+            Enter your tenant and API token
+          </h3>
+        )}
+      </Container>
     </>
   );
 };
 
-export default HUconsumption;
+export default SyntheticMonitors;
