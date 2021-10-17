@@ -14,69 +14,74 @@ import '@pathofdev/react-tag-input/build/index.css';
 
 const { SearchBar, ClearSearchButton } = Search;
 const { ExportCSVButton } = CSVExport;
-const columns = [
-  {
-    dataField: 'id',
-    text: '#',
-    sort: true,
-  },
-  {
-    dataField: 'synName',
-    text: "Monitor's name",
-    filter: textFilter(),
-    sort: true,
-  },
-  {
-    dataField: 'entityId',
-    text: 'Monitor Entity ID',
-  },
-  {
-    dataField: 'type',
-    text: 'Monitor type',
-    sort: true,
-  },
-  {
-    dataField: 'status',
-    text: 'Status',
-    filter: textFilter(),
-    sort: true,
-  },
-  // {
-  //   dataField: 'changeStatus',
-  //   text: 'Change Status',
-  //   events: {
-  //     onClick: (e, column, columnIndex, row) => {
-  //       console.log(row);
-  //     },
-  //   }
-  // }
-];
 
-const defaultSorted = [
-  {
-    dataField: 'id',
-    order: 'asc',
-  },
-];
 
-const selectRow = {
-  mode: 'checkbox',
-  clickToSelect: true,
-  selectColumnPosition: 'right',
-  style: { backgroundColor: '#c8e6c9' },
-  onSelect: (row, isSelect, rowIndex, e) => {
-    console.log(row);
-    console.log(isSelect);
-  },
-  onSelectAll: (isSelect, rows, e) => {
-    console.log(isSelect);
-    console.log(rows);
-  },
-};
-
+let changeMonArr = [];
 let totalHUsConsumed = 0;
 let HUdata = [];
 const SyntheticMonitors = () => {
+  const columns = [
+    {
+      dataField: 'id',
+      text: '#',
+      sort: true,
+      headerStyle: () => {
+        return { width: '5%', textAlign: 'center' };
+      }
+    },
+    {
+      dataField: 'synName',
+      text: "Monitor's name",
+      filter: textFilter(),
+      sort: true
+    },
+    {
+      dataField: 'entityId',
+      text: 'Monitor Entity ID',
+    },
+    {
+      dataField: 'type',
+      text: 'Monitor type',
+      sort: true,
+    },
+    {
+      dataField: 'status',
+      text: 'Status',
+      filter: textFilter(),
+    },
+    // {
+    //   dataField: 'changeStatus',
+    //   text: 'Change Status',
+    //   events: {
+    //     onClick: (e, column, columnIndex, row) => {
+    //       console.log(row);
+    //     },
+    //   }
+    // }
+  ];
+  
+  const defaultSorted = [
+    {
+      dataField: 'id',
+      order: 'asc',
+    },
+  ];
+  
+  const selectRow = {
+    mode: 'checkbox',
+    clickToSelect: true,
+    selectColumnPosition: 'right',
+    style: { backgroundColor: '#c8e6c9' },
+    onSelect: (row, isSelect, rowIndex, e) => {
+      console.log(row);
+      console.log(isSelect);
+      (!changeMonArr.includes(row)) ? changeMonArr.push(row) : changeMonArr.splice(changeMonArr.indexOf(row), 1);
+    },
+    onSelectAll: (isSelect, rows, e) => {
+      console.log(isSelect);
+      console.log(rows);
+    },
+  };
   // create state for holding our tenantId field data  **SANTIAGO
   const [tenantId, setTenantId] = useState('');
   // create state for holding our API Token field data  **SANTIAGO
@@ -87,6 +92,8 @@ const SyntheticMonitors = () => {
   const [Monitors, setMonitors] = useState([]);
   // // create state for tags  **SANTIAGO
   const [tags, setTags] = useState([]);
+
+
 
   // create method to get the information from the tenant
   const handleDynatraceFormSubmit = async (event) => {
@@ -154,6 +161,7 @@ const SyntheticMonitors = () => {
   const handleMonitorChanges = async (e) => {
     // e.preventDefault();
     console.log('here I am');
+    console.log(changeMonArr)
   };
 
   return (

@@ -19,6 +19,9 @@ const columns = [
     dataField: 'id',
     text: '#',
     sort: true,
+    headerStyle: () => {
+      return { width: '5%', textAlign: 'center' };
+    }
   },
   {
     dataField: 'name',
