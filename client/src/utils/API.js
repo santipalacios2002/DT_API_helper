@@ -51,12 +51,6 @@ export const deleteBook = (bookId, token) => {
   });
 };
 
-// make a search to google books api
-// https://www.googleapis.com/books/v1/volumes?q=harry+potter
-export const searchGoogleBooks = (query) => {
-  return fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}`);
-};
-
 // this is to get all the hosts based on tags
 export const getHostUnitConsumption = (tenantId, apiToken, tags) => {
   const apiTags = tags.length === 0 ? '' : `&tag=${tags.toString()}`;
@@ -74,15 +68,48 @@ export const getHostUnitConsumption = (tenantId, apiToken, tags) => {
 
 // this is to get all the monitors based on tags
 export const getSynMonitors = (tenantId, apiToken) => {
-  return fetch(
-    `${tenantId}api/v1/synthetic/monitors`,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `Api-Token ${apiToken}`,
-      },
-    }
-  );
+  return fetch(`${tenantId}api/v1/synthetic/monitors`, {
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: `Api-Token ${apiToken}`,
+    },
+  });
+};
+
+const getSynMonConfig = (tenantId, monitorId, apiToken) => {
+  fetch(`${tenantId}api/v1/synthetic/monitors/${monitorId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: `Api-Token ${apiToken}`,
+    },
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      delete result['entityId'];
+      result.enabled = !result.enabled;
+      //now go send it and change it
+      fetch(`${tenantId}api/v1/synthetic/monitors/${monitorId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: `Api-Token ${apiToken}`,
+        },
+        body: JSON.stringify(result),
+        redirect: 'follow',
+      })
+        .then((response) => response.text())
+        .then((result) => console.log(`changed for monitor ${monitorId}`))
+        .catch((error) => console.log('error', error));
+    })
+    .catch((error) => console.log('error', error));
+};
+
+export const changeSynMonConfig = async (tenantId, apiToken, entitiesIdArr) => {
+  console.log('entitiesIdArr:', entitiesIdArr);
+  entitiesIdArr.map((entityId) => {
+    getSynMonConfig(tenantId, entityId, apiToken);
+  });
+
 };
 
 export const k8sHUReportMemUsed = (tenantId, apiToken, tags) => {
@@ -383,4 +410,3 @@ export const k8sHUReportMemUsage = (tenantId, apiToken, tags) => {
       }; ////////now memory usage
     });
 };
-

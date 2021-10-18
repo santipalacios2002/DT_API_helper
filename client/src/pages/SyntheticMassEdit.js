@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Jumbotron, Container, Col, Form, Button } from 'react-bootstrap';
-import { getSynMonitors } from '../utils/API';
+import { getSynMonitors, changeSynMonConfig } from '../utils/API';
 import Swal from 'sweetalert2';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -17,8 +17,6 @@ const { ExportCSVButton } = CSVExport;
 
 
 let changeMonArr = [];
-let totalHUsConsumed = 0;
-let HUdata = [];
 const SyntheticMonitors = () => {
   const columns = [
     {
@@ -48,16 +46,7 @@ const SyntheticMonitors = () => {
       dataField: 'status',
       text: 'Status',
       filter: textFilter(),
-    },
-    // {
-    //   dataField: 'changeStatus',
-    //   text: 'Change Status',
-    //   events: {
-    //     onClick: (e, column, columnIndex, row) => {
-    //       console.log(row);
-    //     },
-    //   }
-    // }
+    }
   ];
   
   const defaultSorted = [
@@ -77,17 +66,19 @@ const SyntheticMonitors = () => {
       console.log(isSelect);
       (!changeMonArr.includes(row)) ? changeMonArr.push(row) : changeMonArr.splice(changeMonArr.indexOf(row), 1);
     },
-    onSelectAll: (isSelect, rows, e) => {
+    onSelectAll: (isSelect, rows, e) => { // still need to work on this one
       console.log(isSelect);
       console.log(rows);
+      rows.map(row => {
+        (!changeMonArr.includes(row)) ? changeMonArr.push(row) : changeMonArr.splice(changeMonArr.indexOf(row), 1);
+      })
+      console.log(changeMonArr)
     },
   };
   // create state for holding our tenantId field data  **SANTIAGO
   const [tenantId, setTenantId] = useState('');
   // create state for holding our API Token field data  **SANTIAGO
   const [apiToken, setapiToken] = useState('');
-  // create state for getting the total host units  **SANTIAGO
-  const [total, setTotal] = useState(false);
   // create state for the hosts  **SANTIAGO
   const [Monitors, setMonitors] = useState([]);
   // // create state for tags  **SANTIAGO
@@ -118,8 +109,8 @@ const SyntheticMonitors = () => {
       console.log('something is missing');
       return false;
     }
-    // localStorage.setItem('tenantUrl', tenantId);
-    // localStorage.setItem('apiToken', apiToken);
+    localStorage.setItem('tenantUrl', tenantId);
+    localStorage.setItem('apiToken', apiToken);
 
     try {
       const response = await getSynMonitors(tenantId, apiToken);
@@ -149,8 +140,6 @@ const SyntheticMonitors = () => {
         };
       });
       console.log('monitors:', monitors);
-
-      setTotal(true);
       setMonitors(monitors);
       Swal.close();
     } catch (err) {
@@ -159,9 +148,13 @@ const SyntheticMonitors = () => {
   };
 
   const handleMonitorChanges = async (e) => {
-    // e.preventDefault();
-    console.log('here I am');
+    e.preventDefault();
     console.log(changeMonArr)
+    const entitiesIdArr = changeMonArr.map(item => item.entityId) //extracts the entityId and puts it in an array
+    console.log('entities:', entitiesIdArr)
+    await changeSynMonConfig (tenantId, apiToken, entitiesIdArr)    
+    changeMonArr = []
+
   };
 
   return (
