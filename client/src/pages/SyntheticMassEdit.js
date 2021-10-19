@@ -152,8 +152,15 @@ const SyntheticMonitors = () => {
     console.log(changeMonArr)
     const entitiesIdArr = changeMonArr.map(item => item.entityId) //extracts the entityId and puts it in an array
     console.log('entities:', entitiesIdArr)
-    await changeSynMonConfig (tenantId, apiToken, entitiesIdArr)    
+    await changeSynMonConfig (tenantId, apiToken, entitiesIdArr)
     changeMonArr = []
+    Swal.fire({
+      icon: 'success',
+      title: 'Status Changed!',
+      text: 'Please wait a couple of seconds and check',
+      timer: 2000,
+      timerProgressBar: true,
+    }).then(result => window.location.reload());
 
   };
 
