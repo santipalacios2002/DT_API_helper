@@ -23,7 +23,7 @@ const columns = [
     text: '#',
     sort: true,
     headerStyle: () => {
-      return { width: '5%', textAlign: 'center' };
+      return { width: '5%', textAlign: 'center', color: 'white' };
     }
   },
   {
@@ -31,30 +31,48 @@ const columns = [
     text: 'Host Name',
     filter: textFilter(),
     sort: true,
+    headerStyle: () => {
+      return { textAlign: 'center', color: 'white' };
+    }
   },
   {
     dataField: 'entityId',
     text: 'Host Entity ID',
+    headerStyle: () => {
+      return { textAlign: 'center', color: 'white' };
+    }
   },
   {
     dataField: 'hus',
     text: 'Reported HUs',
     sort: true,
+    headerStyle: () => {
+      return { textAlign: 'center', color: 'white' };
+    }
   },
   {
     dataField: 'totalmemUsed',
     text: 'Total Memory (GB)',
     sort: true,
+    headerStyle: () => {
+      return { textAlign: 'center', color: 'white' };
+    }
   },
   {
     dataField: 'memoryUsageInPer',
     text: 'Memory Used %',
     sort: true,
+    headerStyle: () => {
+      return { textAlign: 'center', color: 'white' };
+    }
   },
   {
     dataField: 'calculatedHUs',
     text: 'Calculated HUs',
     sort: true,
+    headerStyle: () => {
+      return { textAlign: 'center', color: 'white' };
+    }
   },
 ];
 
@@ -264,7 +282,7 @@ const K8sReport = () => {
       {total ? (
         <Container fluid>
           <h2>
-            Your tenant is consuming a total of {totalHUsConsumed} Calculate
+            Your tenant is consuming a total of {totalHUsConsumed} Calculated
             Host Units as per the contract across {Hosts.length} Hosts
           </h2>
           <ToolkitProvider
@@ -295,7 +313,7 @@ const K8sReport = () => {
                   {...props.csvProps}>
                   Export to CSV
                 </ExportCSVButton>
-                <BootstrapTable {...props.baseProps} filter={filterFactory()} />
+                <BootstrapTable {...props.baseProps} filter={filterFactory()} rowStyle={ {color: 'white' } }/>
               </div>
             )}
           </ToolkitProvider>

@@ -20,7 +20,7 @@ const columns = [
     text: '#',
     sort: true,
     headerStyle: () => {
-      return { width: '5%', textAlign: 'center' };
+      return { width: '5%', textAlign: 'center', color: 'white' };
     }
   },
   {
@@ -28,27 +28,41 @@ const columns = [
     text: 'Host Name',
     filter: textFilter(),
     sort: true,
+    headerStyle: () => {
+      return { textAlign: 'center', color: 'white' };
+    }
   },
   {
     dataField: 'entityId',
     text: 'Host Entity ID',
+    headerStyle: () => {
+      return { textAlign: 'center', color: 'white' };
+    }
   },
   {
     dataField: 'hus',
     text: 'Consumed HUs',
     sort: true,
+    headerStyle: () => {
+      return { textAlign: 'center', color: 'white' };
+    }
   },
   {
     dataField: 'mon_mode',
     text: 'Monitoring Mode',
     filter: textFilter(),
     sort: true,
+    headerStyle: () => {
+      return { textAlign: 'center', color: 'white' };
+    }
   },
   {
     dataField: 'ipAddr',
     text: 'IP Addr',
-    filter: textFilter(),
     sort: true,
+    headerStyle: () => {
+      return { textAlign: 'center', color: 'white' };
+    }
   },
 ];
 
@@ -216,7 +230,7 @@ const HUconsumption = () => {
       {total ? (
         <Container fluid>
           <h2>
-            Your tenant is consuming a total of {totalHUsConsumed} with{' '}
+            Your tenant is consuming a total of {totalHUsConsumed} Host Units across{' '}
             {Hosts.length} Hosts
           </h2>
           <ToolkitProvider
@@ -232,8 +246,15 @@ const HUconsumption = () => {
             {(props) => (
               <div>
                 <h3>Global Search:</h3>
-                <SearchBar {...props.searchProps} />
-                <ClearSearchButton {...props.searchProps} />
+                <SearchBar {...props.searchProps}/>
+                <span style={{
+                  backgroundColor: '#4fd5e0',
+                  border: 'none',
+                  marginLeft: '1%',
+                  // marginRight: '40px',
+                  paddingTop: '8px',
+                  paddingBottom: '8px',
+                }}><ClearSearchButton {...props.searchProps} /></span>
                 <ExportCSVButton
                   size='xs'
                   style={{
@@ -247,7 +268,7 @@ const HUconsumption = () => {
                   {...props.csvProps}>
                   Export to CSV
                 </ExportCSVButton>
-                <BootstrapTable {...props.baseProps} filter={filterFactory()} />
+                <BootstrapTable {...props.baseProps} filter={filterFactory()} rowStyle={ {color: 'white' } }/>
               </div>
             )}
           </ToolkitProvider>

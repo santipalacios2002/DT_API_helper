@@ -24,28 +24,40 @@ const SyntheticMonitors = () => {
       text: '#',
       sort: true,
       headerStyle: () => {
-        return { width: '5%', textAlign: 'center' };
+        return { width: '5%', textAlign: 'center', color: 'white' };
       }
     },
     {
       dataField: 'synName',
       text: "Monitor's name",
       filter: textFilter(),
-      sort: true
+      sort: true,
+      headerStyle: () => {
+        return { textAlign: 'center', color: 'white' };
+      }
     },
     {
       dataField: 'entityId',
       text: 'Monitor Entity ID',
+      headerStyle: () => {
+        return { textAlign: 'center', color: 'white' };
+      }
     },
     {
       dataField: 'type',
       text: 'Monitor type',
       sort: true,
+      headerStyle: () => {
+        return { textAlign: 'center', color: 'white' };
+      }
     },
     {
       dataField: 'status',
       text: 'Status',
       filter: textFilter(),
+      headerStyle: () => {
+        return { textAlign: 'center', color: 'white' };
+      }
     }
   ];
   
@@ -60,7 +72,7 @@ const SyntheticMonitors = () => {
     mode: 'checkbox',
     clickToSelect: true,
     selectColumnPosition: 'right',
-    style: { backgroundColor: '#c8e6c9' },
+    style: { backgroundColor: '#474948' },
     onSelect: (row, isSelect, rowIndex, e) => {
       console.log(row);
       console.log(isSelect);
@@ -273,6 +285,7 @@ const SyntheticMonitors = () => {
                   selectRow={selectRow}
                   {...props.baseProps}
                   filter={filterFactory()}
+                  rowStyle={ {color: 'white' } }
                 />
               </div>
             )}

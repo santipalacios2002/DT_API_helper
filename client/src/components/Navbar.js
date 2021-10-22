@@ -9,23 +9,23 @@ import Auth from '../utils/auth';
 const AppNavbar = () => {
   // set modal display state
   const [showModal, setShowModal] = useState(false);
-
+  
+  // <Navbar.Brand as={Link} to='/'>
+  //   Main Menu
+  // </Navbar.Brand>
   return (
     <>
-      <Navbar bg='dark' variant='dark' expand='lg'>
+      <Navbar bg='dark' variant='dark' expand='lg' style={{paddingBottom: '40px'}}>
         <Container fluid>
-          <Navbar.Brand as={Link} to='/'>
-            Main Menu
-          </Navbar.Brand>
           <Navbar.Toggle aria-controls='responsive-navbar-nav' />
           <Navbar.Collapse id="responsive-navbar-nav" >
-            <Nav className='me-auto'>
-              <NavDropdown title="Features" id="basic-nav-dropdown">
+               <Nav className='me-auto'>
+        {/*       <NavDropdown title="Features" id="basic-nav-dropdown">
               <NavDropdown.Item href="/HUconsumption">HU Consumption</NavDropdown.Item>
               <NavDropdown.Item href="/K8sReport">K8s Report </NavDropdown.Item>
               <NavDropdown.Item href="/SyntheticMonitor">Synthetic Monitors Edit </NavDropdown.Item>
             </NavDropdown>
-              {/* if user is logged in show saved books and logout 
+             {/*  if user is logged in show saved books and logout 
               {Auth.loggedIn() ? (
                 <>
                   <Nav.Link as={Link} to='/saved'>
