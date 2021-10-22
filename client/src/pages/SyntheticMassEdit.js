@@ -257,7 +257,14 @@ const SyntheticMonitors = () => {
               <div>
                 <h3>Global Search:</h3>
                 <SearchBar {...props.searchProps} />
-                <ClearSearchButton {...props.searchProps} />
+                <span style={{
+                  backgroundColor: '#4fd5e0',
+                  border: 'none',
+                  marginLeft: '1%',
+                  // marginRight: '40px',
+                  paddingTop: '8px',
+                  paddingBottom: '8px',
+                }}><ClearSearchButton {...props.searchProps} /></span>
                 <ExportCSVButton
                   size='xs'
                   style={{
