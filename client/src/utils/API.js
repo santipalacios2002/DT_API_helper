@@ -53,6 +53,9 @@ export const deleteBook = (bookId, token) => {
 
 // this is to get all the hosts based on tags
 export const getHostUnitConsumption = (tenantId, apiToken, tags) => {
+  if (tenantId.slice(-1) !== '/') {
+    tenantId = tenantId.concat('/')
+  }
   const apiTags = tags.length === 0 ? '' : `&tag=${tags.toString()}`;
   console.log(apiTags);
   return fetch(
@@ -68,6 +71,9 @@ export const getHostUnitConsumption = (tenantId, apiToken, tags) => {
 
 // this is to get all the monitors based on tags
 export const getSynMonitors = (tenantId, apiToken) => {
+  if (tenantId.slice(-1) !== '/') {
+    tenantId = tenantId.concat('/')
+  }
   return fetch(`${tenantId}api/v1/synthetic/monitors`, {
     headers: {
       'Content-Type': 'application/json',
@@ -77,6 +83,9 @@ export const getSynMonitors = (tenantId, apiToken) => {
 };
 
 const getSynMonConfig = (tenantId, monitorId, apiToken) => {
+  if (tenantId.slice(-1) !== '/') {
+    tenantId = tenantId.concat('/')
+  }
   fetch(`${tenantId}api/v1/synthetic/monitors/${monitorId}`, {
     headers: {
       'Content-Type': 'application/json',
@@ -105,6 +114,9 @@ const getSynMonConfig = (tenantId, monitorId, apiToken) => {
 };
 
 export const changeSynMonConfig = async (tenantId, apiToken, entitiesIdArr) => {
+  if (tenantId.slice(-1) !== '/') {
+    tenantId = tenantId.concat('/')
+  }
   console.log('entitiesIdArr:', entitiesIdArr);
   entitiesIdArr.map((entityId) => {
     getSynMonConfig(tenantId, entityId, apiToken);
@@ -113,6 +125,9 @@ export const changeSynMonConfig = async (tenantId, apiToken, entitiesIdArr) => {
 };
 
 export const k8sHUReportMemUsed = (tenantId, apiToken, tags) => {
+  if (tenantId.slice(-1) !== '/') {
+    tenantId = tenantId.concat('/')
+  }
   //amount of memory in GB
   const headers = {
     Authorization: `Api-Token ${apiToken}`,
@@ -269,6 +284,9 @@ export const k8sHUReportMemUsed = (tenantId, apiToken, tags) => {
 };
 
 export const k8sHUReportMemUsage = (tenantId, apiToken, tags) => {
+  if (tenantId.slice(-1) !== '/') {
+    tenantId = tenantId.concat('/')
+  }
   const headers = {
     Authorization: `Api-Token ${apiToken}`,
     Accept: 'application/json',
