@@ -1,5 +1,5 @@
 import React from 'react';
-import { push as Menu } from 'react-burger-menu';
+import { pushRotate as Menu } from 'react-burger-menu';
 
 class Example extends React.Component {
   showSettings(event) {

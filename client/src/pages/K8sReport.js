@@ -220,8 +220,7 @@ const K8sReport = () => {
         style={{ backgroundColor: '#191919' }}>
         <Container>
           <h1>
-            Get k8s consumption report for the month of{' '}
-            {`${new Intl.DateTimeFormat('en-US', options).format(d)}`}
+            Get k8s consumption report for the month of {` ${new Intl.DateTimeFormat('en-US', options).format(d)}`}
           </h1>
           <Form onSubmit={handleDynatraceFormSubmit}>
             <Form.Row>
