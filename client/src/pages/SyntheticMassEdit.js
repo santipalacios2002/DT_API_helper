@@ -155,6 +155,14 @@ const SyntheticMonitors = () => {
       setMonitors(monitors);
       Swal.close();
     } catch (err) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Please make sure you have a tenant and token',
+        timer: 3500,
+        timerProgressBar: true,
+        footer: 'Please include "/" at the end of the tenant URL'
+      });
       console.error(err);
     }
   };
