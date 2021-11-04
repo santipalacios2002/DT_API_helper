@@ -16,9 +16,9 @@ class Example extends React.Component {
         <a id='about' className='menu-item' href='/HUConsumption'>
         HU Consumption
         </a>
-        <a id='contact' className='menu-item' href='/K8sReport'>
+{/*         <a id='contact' className='menu-item' href='/K8sReport'>
         K8s Report
-        </a>
+    </a> */}
         <a id='contact' className='menu-item' href='/SyntheticMonitor'>
         Synthetic Monitors Edit
         </a>
